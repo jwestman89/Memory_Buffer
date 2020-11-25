@@ -24,8 +24,8 @@
 #include "datastruct.h"
 
 
-Buffer lifo_init(uint16_t l){
-  Buffer buf;
+_LIFO_TYPE lifo_init(uint16_t l){
+  _LIFO_TYPE buf;
   buf.length = l;
   buf.base = (DATA_TYPE*)malloc(l);
   if (! buf.base){
@@ -36,7 +36,7 @@ Buffer lifo_init(uint16_t l){
 }
 
 
-Buffer_Status lifo_check(Buffer* lbuf){
+Buffer_Status lifo_check(_LIFO_TYPE* lbuf){
   /* check pointers */
   if ( !lbuf || !(lbuf->head) || !(lbuf->base) ){
     return LB_ERROR;
@@ -45,7 +45,7 @@ Buffer_Status lifo_check(Buffer* lbuf){
 }
 
 
-Buffer_Status lifo_full_check(Buffer* lbuf){
+Buffer_Status lifo_full_check(_LIFO_TYPE* lbuf){
   Buffer_Status status = lifo_check(lbuf);
   if (status == LB_ERROR){
     return LB_ERROR;
@@ -58,7 +58,7 @@ Buffer_Status lifo_full_check(Buffer* lbuf){
 }
 
 
-Buffer_Status lifo_empty_check(Buffer* lbuf){
+Buffer_Status lifo_empty_check(_LIFO_TYPE* lbuf){
   Buffer_Status status;
   status = lifo_check(lbuf);
   if(status == LB_ERROR){
@@ -75,7 +75,7 @@ Buffer_Status lifo_empty_check(Buffer* lbuf){
 }
 
 
-Buffer_Status lifo_push(DATA_TYPE element, Buffer* lbuf){
+Buffer_Status lifo_push(DATA_TYPE element, _LIFO_TYPE* lbuf){
   Buffer_Status status;
   status = lifo_full_check(lbuf);
   if(status != LB_NOT_FULL) {
@@ -87,7 +87,7 @@ Buffer_Status lifo_push(DATA_TYPE element, Buffer* lbuf){
 }
 
 
-DATA_TYPE lifo_pull(Buffer* lbuf){
+DATA_TYPE lifo_pull(_LIFO_TYPE* lbuf){
   Buffer_Status status;
   status = lifo_empty_check(lbuf);
   if (status != LB_NOT_EMPTY){
@@ -99,6 +99,6 @@ DATA_TYPE lifo_pull(Buffer* lbuf){
 }
 
 
-void lifo_reset(Buffer* lbuf){
+void lifo_reset(_LIFO_TYPE* lbuf){
   free((DATA_TYPE*)lbuf->base);
 }

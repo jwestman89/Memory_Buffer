@@ -23,7 +23,7 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 volatile bool threadRunning = true;
 
 void* write_to(void* buffer){
-  Buffer* lbuf = (Buffer*)buffer;
+  LIFO_Buffer* lbuf = (LIFO_Buffer*)buffer;
   int i = 0;
   while(i<SIZE) {
     i++;
@@ -57,7 +57,7 @@ void* write_to(void* buffer){
 
 
 void* read_from(void* buffer){
-  Buffer* lbuf = (Buffer*)buffer;
+  LIFO_Buffer* lbuf = (LIFO_Buffer*)buffer;
   while(threadRunning == true) {
     Buffer_Status pullStatus = lifo_empty_check(lbuf);
     if(pullStatus == LB_ERROR){
@@ -81,7 +81,7 @@ void* read_from(void* buffer){
 
 int main(){
   /* check the status of the buffer  */
-  Buffer lbuf = lifo_init(SIZE);
+  LIFO_Buffer lbuf = lifo_init(SIZE);
   Buffer_Status status = lifo_check(&lbuf);
   if(status != LB_NO_ERROR) {
     printf("error in buffer initialization\n");
