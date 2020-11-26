@@ -42,6 +42,7 @@ typedef enum Buffer_Status{
   LB_ERROR,
 } Buffer_Status;
 
+
 typedef struct LIFO_Buffer{
   uint16_t length;
   volatile DATA_TYPE* base;
@@ -49,10 +50,28 @@ typedef struct LIFO_Buffer{
   } LIFO_Buffer;
 
 
-  struct LIFO_Buffer_packed{
+typedef struct LIFO_Buffer_packed{
   uint16_t length;
   volatile DATA_TYPE* base;
   volatile DATA_TYPE* head;
-  } __attribute__((packed)) LIFO_Buffer_packed;
+} __attribute__((packed)) LIFO_Buffer_packed;
 
+
+typedef struct FIFO_Buffer {
+  uint16_t count;
+  uint16_t length;
+  volatile DATA_TYPE* head;
+  volatile DATA_TYPE* base;
+  volatile DATA_TYPE* tail;
+} FIFO_Buffer;
+
+
+typedef struct FIFO_Buffer_packed{
+  uint16_t count;
+  uint16_t length;
+  volatile DATA_TYPE* head;
+  volatile DATA_TYPE* base;
+  volatile DATA_TYPE* tail;
+} __attribute__((packed)) FIFO_Buffer_packed;
+ 
 #endif /* _BUFFER_H */

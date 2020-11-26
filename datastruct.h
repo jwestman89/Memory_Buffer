@@ -97,6 +97,7 @@ USE:
   lbuf:    any _LIFO_TYPE.
 RETURNS:
   enum LB_NO_ERROR 0
+  enum LB_FULL     1
   enum LB_ERROR    5
 */
 Buffer_Status lifo_push(DATA_TYPE element, _LIFO_TYPE *lbuf);
@@ -107,11 +108,15 @@ Pulls the top-element out of the _LIFO_TYPE lbuf.
 
 **************************
 USE:
-  lbuf: any _LIFO_TYPE.
+  lbuf:    any _LIFO_TYPE.
+  element: address to put value in.
 RETURNS:
-  DATA_TYPE
+  enum LB_NO_ERROR 0
+  enum LB_EMPTY 3
+  enum LB_ERROR 5
+  In case of error, sets element to a null pointer;
 */
-DATA_TYPE lifo_pull(_LIFO_TYPE *lbuf);
+Buffer_Status lifo_pull(DATA_TYPE* element, _LIFO_TYPE *lbuf);
 
 
 /*

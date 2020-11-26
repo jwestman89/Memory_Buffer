@@ -1,13 +1,11 @@
 /*
+	lifobuffer.c
 	************************************************************
-	Contains functions for a LIFO-style buffer that can be used as
-	an intermediary storage of data when the reading/writing bet
-	ween two processes is unsynchronized. This program was writt
-	en for datatypes of uint8_t, however, the data type can be m
-	anipulated into any required type by changing the DATA_TYPE 
-	variable with the #define preprocessor command in the target
-	file. The buffer is stored in the heap.
-	Use a mutex lock if the read/write process is multi threaded.
+	Contains functions for a LIFO-style buffer that can be used 
+	as an intermediary storage of data when the reading/writing 
+	between two processes is unsynchronized. The buffer is store
+	d in the heap. Use a mutex lock if the read/write process is
+	multi threaded.
 
 	USE:
 	Compile this into an object file (gcc lifobuffer.c -c) and l
@@ -51,7 +49,7 @@ Buffer_Status lifo_full_check(_LIFO_TYPE* lbuf){
     return LB_ERROR;
   }
   /* check if the buffer is full  */
-  else if (lbuf->head >= (lbuf->base + lbuf->length) ) {
+  else if (lbuf->head >= (lbuf->base + lbuf->length -1) ) {
     return LB_FULL;
   }
   return LB_NOT_FULL;
@@ -78,24 +76,34 @@ Buffer_Status lifo_empty_check(_LIFO_TYPE* lbuf){
 Buffer_Status lifo_push(DATA_TYPE element, _LIFO_TYPE* lbuf){
   Buffer_Status status;
   status = lifo_full_check(lbuf);
-  if(status != LB_NOT_FULL) {
+  if(status == LB_ERROR) {
     return LB_ERROR;
   }
-  lbuf->head ++;
-  *(lbuf->head) = element;
-  return LB_NO_ERROR;
+  else if (status == LB_FULL){
+    return LB_FULL;
+  }
+  else {
+    lbuf->head ++;
+    *(lbuf->head) = element;
+    return LB_NO_ERROR;
+  }
 }
 
 
-DATA_TYPE lifo_pull(_LIFO_TYPE* lbuf){
+Buffer_Status lifo_pull(DATA_TYPE* element, _LIFO_TYPE* lbuf){
   Buffer_Status status;
   status = lifo_empty_check(lbuf);
-  if (status != LB_NOT_EMPTY){
-    return 0; /*this will depend on your application*/
+  if (status == LB_EMPTY){
+    return LB_EMPTY;
   }
-  DATA_TYPE element = *(lbuf->head);
-  lbuf->head --;
-  return element;
+  else if(status == LB_ERROR) {
+    return LB_ERROR;
+  }
+  else {
+    *element = *(lbuf->head);
+    lbuf->head --;
+    return LB_NO_ERROR;
+  }
 }
 
 

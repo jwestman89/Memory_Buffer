@@ -10,7 +10,7 @@
 #include<stdint.h>
 #include<stdlib.h>
 #include<stdio.h>
-#include "datastruct.h"
+#include"datastruct.h"
 #include<pthread.h>
 #include<stdbool.h>
 
@@ -25,32 +25,27 @@ volatile bool threadRunning = true;
 void* write_to(void* buffer){
   LIFO_Buffer* lbuf = (LIFO_Buffer*)buffer;
   int i = 0;
-  while(i<SIZE) {
-    i++;
-    Buffer_Status pushStatus = lifo_full_check(lbuf);
+  Buffer_Status pushStatus;
+  while(i<SIZE+10) {
+    /*uint8_t val = (uint8_t)rand();*/
+    uint8_t val = (uint8_t)i;
+    pthread_mutex_lock(&mutex);
+    pushStatus = lifo_push(val,lbuf);
+    pthread_mutex_unlock(&mutex);
     if(pushStatus == LB_ERROR){
-      printf("Buffer error");
+      printf("Buffer error (push request failed)\n");
       threadRunning = false;
       return NULL;
     }
-    else if(pushStatus == LB_NOT_FULL){
-      /*uint8_t val = (uint8_t)rand();*/
-      uint8_t val = (uint8_t)i;
-      pthread_mutex_lock(&mutex);
-      pushStatus = lifo_push(val,lbuf);
-      pthread_mutex_unlock(&mutex);
-      if(pushStatus == LB_ERROR){
-        printf("Buffer error (push request failed)\n");
-        threadRunning = false;
-        return NULL;
-      }
-      printf("Pushed %d\n", val);
-    }
     else if(pushStatus == LB_FULL){
       printf("Buffer is full\n");
-    }    
-    for(int j=0; j<WAIT_LONG; j++);
-  }
+    }
+    else {
+    printf("Pushed %d\n", val);
+    i++;    
+    for(int j=0; j<WAIT_SHORT; j++); /* delay */
+    }  
+}
   threadRunning = false;
   return NULL;
 }
@@ -58,22 +53,22 @@ void* write_to(void* buffer){
 
 void* read_from(void* buffer){
   LIFO_Buffer* lbuf = (LIFO_Buffer*)buffer;
-  while(threadRunning == true) {
-    Buffer_Status pullStatus = lifo_empty_check(lbuf);
-    if(pullStatus == LB_ERROR){
-      printf("Buffer error\n");
-      return NULL;
+  uint8_t val;
+  Buffer_Status pullStatus;
+  while(threadRunning == true) { 
+    pthread_mutex_lock(&mutex);
+    pullStatus = lifo_pull(&val, lbuf);
+    pthread_mutex_unlock(&mutex);
+    if(pullStatus == LB_EMPTY){
+      //printf("Buffer is empty.\t"); /*no line break*/
     }
-    else if(pullStatus == LB_NOT_EMPTY){
-      pthread_mutex_lock(&mutex);
-      uint8_t val = lifo_pull(lbuf);
-      pthread_mutex_unlock(&mutex);
+    else if(pullStatus == LB_ERROR){
+      printf("Buffer error. Pull request failed.");
+    }
+    else {
       printf("%d pulled\n", val);
+      for(int j=0; j<WAIT_LONG; j++); /* delay  */
     }
-    else if(pullStatus == LB_EMPTY){
-      printf("Buffer is empty\n");
-    }
-    for(int j=0; j<WAIT_SHORT; j++);
   }
   return NULL;
 }
