@@ -47,6 +47,7 @@ typedef struct LIFO_Buffer{
   uint16_t length;
   volatile DATA_TYPE* base;
   volatile DATA_TYPE* head;
+  volatile uint16_t count;
   } LIFO_Buffer;
 
 
@@ -54,6 +55,7 @@ typedef struct LIFO_Buffer_packed{
   uint16_t length;
   volatile DATA_TYPE* base;
   volatile DATA_TYPE* head;
+  volatile uint16_t count;
 } __attribute__((packed)) LIFO_Buffer_packed;
 
 

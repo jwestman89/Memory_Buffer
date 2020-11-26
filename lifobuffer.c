@@ -30,6 +30,7 @@ _LIFO_TYPE lifo_init(uint16_t l){
     buf.length = 0;
   }
   buf.head = buf.base;
+  buf.count = 0;
   return buf;
 }
 
@@ -49,7 +50,7 @@ Buffer_Status lifo_full_check(_LIFO_TYPE* lbuf){
     return LB_ERROR;
   }
   /* check if the buffer is full  */
-  else if (lbuf->head >= (lbuf->base + lbuf->length -1) ) {
+  else if (lbuf->count >= lbuf->length) {
     return LB_FULL;
   }
   return LB_NOT_FULL;
@@ -63,7 +64,7 @@ Buffer_Status lifo_empty_check(_LIFO_TYPE* lbuf){
     return LB_ERROR;
   }
   /* check if buffer is empty */
-  else if(lbuf->head == lbuf->base){
+  else if(lbuf->head == lbuf->base && lbuf->count == 0){
     return LB_EMPTY;
   }
   else
@@ -83,8 +84,11 @@ Buffer_Status lifo_push(DATA_TYPE element, _LIFO_TYPE* lbuf){
     return LB_FULL;
   }
   else {
-    lbuf->head ++;
+    lbuf->count ++;
     *(lbuf->head) = element;
+    if( lbuf->count < lbuf->length) {
+      lbuf->head ++;
+    }
     return LB_NO_ERROR;
   }
 }
@@ -100,8 +104,11 @@ Buffer_Status lifo_pull(DATA_TYPE* element, _LIFO_TYPE* lbuf){
     return LB_ERROR;
   }
   else {
+    lbuf->count --;
     *element = *(lbuf->head);
-    lbuf->head --;
+    if( lbuf->count != 0){
+      lbuf->head --;
+    }
     return LB_NO_ERROR;
   }
 }
