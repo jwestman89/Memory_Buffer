@@ -15,8 +15,7 @@
 
 
 #include<stdlib.h>
-#include"datastruct.h"
-
+#include"buffer.h"
 
 _FIFO_TYPE fifo_init(uint16_t l){
   _FIFO_TYPE buf;
@@ -45,11 +44,12 @@ Buffer_Status fifo_full_check(_FIFO_TYPE* fbuf) {
   if(status == LB_ERROR){
     return LB_ERROR;
   }
-  else if( ((fbuf->tail == fbuf->base) && (fbuf->head == (fbuf->base + fbuf->length))) || 
-	   fbuf->head == (fbuf->tail-1) ){
+  else if(fbuf->count == fbuf->length){
     return LB_FULL;
   }
-  return LB_NOT_FULL;
+  else {
+    return LB_NOT_FULL;
+  }
 }
 
 
@@ -58,7 +58,7 @@ Buffer_Status fifo_empty_check(_FIFO_TYPE* fbuf){
   if(status == LB_ERROR){
     return LB_ERROR;
   }
-  else if(fbuf->head == fbuf->tail && fbuf->count == 0){
+  else if(fbuf->count == 0){
     return LB_EMPTY;
   }
   else{
@@ -89,24 +89,24 @@ Buffer_Status fifo_push(DATA_TYPE element, _FIFO_TYPE* fbuf){
 }
 
 
-DATA_TYPE* fifo_pull(_FIFO_TYPE* fbuf){
+Buffer_Status fifo_pull(DATA_TYPE* element, _FIFO_TYPE* fbuf){
   Buffer_Status status = fifo_empty_check(fbuf);
   if(status == LB_ERROR) {
-    return NULL; 
+    return LB_ERROR; 
   }
   else if(status == LB_EMPTY){
-    return NULL; 
+    return LB_EMPTY; 
   }
   else {
-    DATA_TYPE element = *(fbuf->tail);
+    *element = *(fbuf->tail);
     fbuf->count --;
     if(fbuf->tail >= (fbuf->base + fbuf->length) ) {
-      fbuf->tail == fbuf->base;
+      fbuf->tail = fbuf->base;
     }
     else {
       fbuf->tail ++;
     }
-    return &element;
+    return LB_NO_ERROR;
   }
 }
 
