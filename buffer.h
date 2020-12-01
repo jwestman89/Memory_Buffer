@@ -47,7 +47,6 @@ typedef struct LIFO_Buffer{
   uint16_t length;
   volatile DATA_TYPE* base;
   volatile DATA_TYPE* head;
-  volatile uint16_t count;
   } LIFO_Buffer;
 
 
@@ -55,7 +54,6 @@ typedef struct LIFO_Buffer_packed{
   uint16_t length;
   volatile DATA_TYPE* base;
   volatile DATA_TYPE* head;
-  volatile uint16_t count;
 } __attribute__((packed)) LIFO_Buffer_packed;
 
 
@@ -75,5 +73,20 @@ typedef struct FIFO_Buffer_packed{
   volatile DATA_TYPE* base;
   volatile DATA_TYPE* tail;
 } __attribute__((packed)) FIFO_Buffer_packed;
+
+
+typedef struct ll_element ll_element;
+struct ll_element{
+  ll_element* next;
+  ll_element* previous;
+  DATA_TYPE data;
+};
+
+
+typedef struct ll_Buffer {
+  ll_element* head;
+  ll_element* tail;
+  uint16_t count;
+} ll_Buffer;
  
 #endif /* _BUFFER_H */
