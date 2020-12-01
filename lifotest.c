@@ -15,8 +15,8 @@
 #include<stdbool.h>
 
 #define SIZE 5
-#define WAIT_LONG  1000000000
-#define WAIT_SHORT 100000000
+#define WAIT_LONG  10000000000
+#define WAIT_SHORT 1000000000
 /* #define RAND_MAX 255 */
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
